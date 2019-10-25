@@ -1,0 +1,13 @@
+
+
+.gdbar img {
+  width: 400px !important;
+  height: 400px !important;
+  margin: 10px 10px;
+}
+
+.gdbar {
+  width: 500px !important;
+  height: 0px !important;
+}
+

@@ -119,8 +119,8 @@ g <- list(
   projection = list(type = 'albers usa'),
   showland = TRUE,
   landcolor = BudSilver, #toRGB("gray95"),
-  # showlakes = TRUE,
-  # lakecolor = toRGB("White"),
+  showlakes = TRUE,
+  lakecolor = BudBlue,  #toRGB("BudBlue"),
   subunitcolor = BudRed, #toRGB("Red"),
   countrycolor= toRGB("gray85"),
   contrywidth = 0.5,
@@ -128,14 +128,13 @@ g <- list(
 )
 
 plot_geo(st, locationmode = 'USA-states') %>%
-  add_markers(x=st$Long, y=st$Lat, size = st$BreweriesCount, color = st$BreweriesCount, hoverinfo = "text",
+  add_markers(x=st$Long, y=st$Lat, size = st$BreweriesCount, 
+              color = st$BreweriesCount, colors = "Reds", hoverinfo = "text",
               text = paste0(
                 "State : ", st$StateName, "<br />",
                 "Population = ", format(st$Over21Pop, big.mark = ","), "<br />",
                 "Breweries Count : ", st$BreweriesCount, "<br />")) %>% 
   layout(title = "Breweries By State", geo = g)
-
-
 
 
 ######################################
@@ -275,26 +274,6 @@ ggplot(data = Top10ABVOrdered,
                                           colour = BudBlue),
         panel.grid.major.x = element_blank())
 
-##################################
-# Tried to use plotly to display the Beer name.  Would not work.
-#  Need the text portion to use the current value of x and y to get the beer name.
-#
-# bc <- plot_ly(Top10ABVOrdered, 
-#               x = reorder(Top10ABVOrdered$State, -Top10ABVOrdered$abv_max), 
-#               y = Top10ABVOrdered$abv_max, 
-#               type = 'bar', 
-#               text = paste0("Beer: ",
-#                             filter(BeersData, 
-#                             BeersData$State %in% Top10ABVOrdered$State & 
-#                               BeersData$ABV %in% Top10ABVOrdered$abv_max) %>% 
-#                 select(BeerName)))
-# bc
-# 
-# TESTING FILTER FUNCTIONALLITY for use in above.
-# filter(BeersData, 
-#        BeersData$State %in% 'CO' & 
-#          BeersData$ABV %in% 0.128) %>% 
-#   select(BeerName)
 
 ######################################
 ##  State with the most bitter Beer.
@@ -324,13 +303,6 @@ h1 <- ggplot(BeersData, aes(x = ABV)) +
   labs(title = "Histogram", x = "ABV", y = "Count") +
   scale_x_continuous(labels = scales::percent_format(accurac = 1))
 h1
-# Histogram of Means of ABV by State.
-h2 <- ggplot(BeerStatsByState, aes(x = abv_mean)) +
-  geom_histogram(color = BudRed, fill = BudSilver, binwidth = 0.0025) +
-  labs(title = "Histogram", x = "ABV", y = "Count")+
-  scale_x_continuous(labels = scales::percent_format(accurac = 1))
-h2
-
 
 
 bp <- ggplot(BeersData, aes(y = ABV)) +
@@ -379,7 +351,7 @@ plot_geo(st_stats, locationmode = 'USA-states') %>%
               color = st_stats$abv_mean, colors = "Reds", hoverinfo = "text",
               text = paste0(
                 "State : ", st_stats$State, "<br />",
-                "Population = ", format(st_stats$Pop2019, big.mark = ","), "<br />",
+                "Population = ", format(st_stats$Over21Pop,big.mark = ","), "<br />",
                 "Breweries Count : ", st_stats$BreweriesCount, "<br />",
                 "Mean ABV : ", sprintf("%.2f %%",100*st_stats$abv_mean), "<br />",
                 "Mean IBU : ", round(st_stats$ibu_mean,2))) %>%
@@ -467,7 +439,7 @@ Top10 <- top_n(st, 10, st$Breweries_per_Mill)  # Gets the Top 10 Breweries per C
 
 Bottom10 <- top_n(st, -10, st$Breweries_per_Mill) # Gets the bottom 10 Breweries per Capa
 
-ggplot(Top10, mapping = aes(x = State, y = Breweries_per_Mill, fill = BudRed)) +
+ggplot(Top10, mapping = aes(x = reorder(State,-Breweries_per_Mill), y = Breweries_per_Mill, fill = BudRed)) +
   geom_bar(stat = "Identity", show.legend = FALSE, colour = BudSilver) +
   geom_text(aes(label=round(Breweries_per_Mill,2)), vjust = 1.25, color = BudWhite) +
   labs(title="Top 10 Breweries Per 1 Mill Capa", x="States",y="Breweries Per Million Capa",fill="") +
@@ -480,7 +452,7 @@ ggplot(Top10, mapping = aes(x = State, y = Breweries_per_Mill, fill = BudRed)) +
         panel.grid.major.x = element_blank())
 
 
-ggplot(Bottom10, mapping = aes(x = State, y = Breweries_per_Mill, fill = BudRed)) +
+ggplot(Bottom10, mapping = aes(x = reorder(State,-Breweries_per_Mill), y = Breweries_per_Mill, fill = BudRed)) +
   geom_bar(stat = "Identity", show.legend = FALSE, colour = BudSilver) +
   geom_text(aes(label=round(Breweries_per_Mill,2)), vjust = 1.25, color = BudWhite) +
   labs(title="Bottom 10 Breweries Per 1 Mill Capa", x="States",y="Breweries Per Million Capa",fill="") +
